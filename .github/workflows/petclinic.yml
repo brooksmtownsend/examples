@@ -1,4 +1,5 @@
-name: Petclinic
+# BROOKSMTOWNSEND VERSION
+name: Petclinic-brooks
 
 on:
   push:
@@ -73,18 +74,18 @@ jobs:
           test-options: "--release --doc"
 
       # Note: This step is only required because secrets cannot be used in the `include` block
-      - name: Set wash subject key (clinicapi)
-        if: ${{ matrix.working-directory == 'petclinic/actors/clinicapi' }}
-        run: echo "WASH_SUBJECT_KEY=${{ secrets.WASMCLOUD_PETCLINIC_CLINICAPI }}" > $GITHUB_ENV
-      - name: Set wash subject key (customers)
-        if: ${{ matrix.working-directory == 'petclinic/actors/customers' }}
-        run: echo "WASH_SUBJECT_KEY=${{ secrets.WASMCLOUD_PETCLINIC_CUSTOMERS }}" > $GITHUB_ENV
-      - name: Set wash subject key (vets)
-        if: ${{ matrix.working-directory == 'petclinic/actors/vets' }}
-        run: echo "WASH_SUBJECT_KEY=${{ secrets.WASMCLOUD_PETCLINIC_VETS }}" > $GITHUB_ENV
-      - name: Set wash subject key (visits)
-        if: ${{ matrix.working-directory == 'petclinic/actors/visits' }}
-        run: echo "WASH_SUBJECT_KEY=${{ secrets.WASMCLOUD_PETCLINIC_VISITS }}" > $GITHUB_ENV
+      # - name: Set wash subject key (clinicapi)
+      #   if: ${{ matrix.working-directory == 'petclinic/actors/clinicapi' }}
+      #   run: echo "WASH_SUBJECT_KEY=${{ secrets.WASMCLOUD_PETCLINIC_CLINICAPI }}" > $GITHUB_ENV
+      # - name: Set wash subject key (customers)
+      #   if: ${{ matrix.working-directory == 'petclinic/actors/customers' }}
+      #   run: echo "WASH_SUBJECT_KEY=${{ secrets.WASMCLOUD_PETCLINIC_CUSTOMERS }}" > $GITHUB_ENV
+      # - name: Set wash subject key (vets)
+      #   if: ${{ matrix.working-directory == 'petclinic/actors/vets' }}
+      #   run: echo "WASH_SUBJECT_KEY=${{ secrets.WASMCLOUD_PETCLINIC_VETS }}" > $GITHUB_ENV
+      # - name: Set wash subject key (visits)
+      #   if: ${{ matrix.working-directory == 'petclinic/actors/visits' }}
+      #   run: echo "WASH_SUBJECT_KEY=${{ secrets.WASMCLOUD_PETCLINIC_VISITS }}" > $GITHUB_ENV
 
       - name: Build wasmcloud actor
         if: startswith(github.ref, 'refs/tags/') # Only run on tag push
@@ -156,12 +157,16 @@ jobs:
           echo "oci-version=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[].version')" >> $GITHUB_ENV
         working-directory: ${{ matrix.working-directory }}
 
-      - name: Push actor to AzureCR
-        uses: wasmcloud/common-actions/oci-artifact-release@main
-        with:
-          artifact-path: ${{ env.working-directory }}/build/${{ env.oci-repository }}_s.wasm
-          oci-url: ${{ secrets.AZURECR_PUSH_URL }}
-          oci-repository: ${{ env.oci-repository }}
-          oci-version: ${{ env.oci-version }}
-          oci-username: ${{ secrets.AZURECR_PUSH_USER }}
-          oci-password: ${{ secrets.AZURECR_PUSH_PASSWORD }}
+      - name: diagnostics
+        run: |
+          ls -lah ${{ matrix.working-directory }}/build
+
+      # - name: Push actor to AzureCR
+      #   uses: wasmcloud/common-actions/oci-artifact-release@main
+      #   with:
+      #     artifact-path: ${{ env.working-directory }}/build/${{ env.oci-repository }}_s.wasm
+      #     oci-url: ${{ secrets.AZURECR_PUSH_URL }}
+      #     oci-repository: ${{ env.oci-repository }}
+      #     oci-version: ${{ env.oci-version }}
+      #     oci-username: ${{ secrets.AZURECR_PUSH_USER }}
+      #     oci-password: ${{ secrets.AZURECR_PUSH_PASSWORD }}
